@@ -1,0 +1,9 @@
+Flask
+openai-whisper
+firebase-admin
+deep-translator
+python-dotenv
+reportlab
+sumy
+requests
+openai

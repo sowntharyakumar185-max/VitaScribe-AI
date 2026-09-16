@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART SPEECH SUMMARIZER | Speech to Text</title>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #f5f6fa;
+            color: #2d3436;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 16px;
+            border-bottom: 1px solid #dfe6e9;
+            background-color: #ffffff;
+        }
+
+        .clinic-banner {
+            width: 100%;
+            height: 110px;
+            display: block;
+            border-bottom: 1px solid #dfe6e9;
+            background: #fff;
+            object-fit: contain;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 24px auto 40px;
+            padding: 0 16px;
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 320px;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 16px 20px 18px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card h2 {
+            margin: 0 0 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #dfe6e9;
+            font-size: 0.9rem;
+        }
+
+        .step-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* upload-inline removed: upload via file no longer used */
+
+        .btn {
+            border: 1px solid transparent;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #ffffff;
+            color: #2d3436;
+        }
+
+        .btn.primary {
+            border-color: #0984e3;
+        }
+
+        .btn.secondary {
+            border-color: #636e72;
+        }
+
+        .btn.success {
+            border-color: #00b894;
+        }
+
+        .btn.danger {
+            border-color: #d63031;
+        }
+
+        .btn:hover {
+            background-color: #f1f2f6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            margin-top: 6px;
+            color: #636e72;
+        }
+
+        .loader {
+            margin-top: 6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #dfe6e9;
+            border-top-color: #0984e3;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results {
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .result-box {
+            border: 1px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 10px 12px;
+            background-color: #ffffff;
+        }
+
+        .result-box h3 {
+            margin: 0 0 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .result-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        textarea.textarea {
+            width: 100%;
+            min-height: 110px;
+            resize: vertical;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #dfe6e9;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        .translate-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .translate-row select {
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #dfe6e9;
+            font-size: 0.9rem;
+        }
+
+        .email-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .email-row input[type="email"] {
+            flex: 1;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #dfe6e9;
+            font-size: 0.9rem;
+        }
+
+        .dict-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .dict-grid input {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #dfe6e9;
+            font-size: 0.9rem;
+        }
+
+        .dict-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-top: 6px;
+            font-size: 0.88rem;
+            gap: 8px;
+        }
+
+        .side-panel {
+            position: sticky;
+            top: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .app-layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .grid-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .results {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .grid-4 {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .dict-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <img class="clinic-banner" src="{{ url_for('static', filename='clinic_header.png') }}" alt="C.M. Health Clinic" />
+
+    <div class="page-header">
+        <h1>AI Medical Report &amp; Prescription Generator</h1>
+        <div style="display:flex;gap:10px;align-items:center;">
+            <a href="/admin" class="btn secondary" style="font-size:0.85rem;">
+            Admin Login
+            </a>
+            <a href="/logout" class="btn secondary" style="font-size:0.85rem;">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="app-layout">
+            <div>
+
+            <!-- Patient Information -->
+            <section class="card">
+                <h2>Patient Information</h2>
+                <div class="grid-4">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name</label>
+                        <input type="text" id="patientName" placeholder="Enter patient name">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" placeholder="Enter age">
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Weight (kg)</label>
+                        <input type="number" id="weight" placeholder="Enter weight">
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Select Gender</label>
+                        <select id="gender">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="doctorName">Doctor Name</label>
+                        <input type="text" id="doctorName" value="Dr.M.Chandramouli M.d,M.E.M">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 1 -->
+            <section class="card">
+                <h2>Step 1: Record Doctor Diagnosis</h2>
+                <div class="step-row">
+                    <div class="buttons">
+                        <button id="recordBtn" class="btn primary"><i class="fas fa-microphone"></i> Start Recording</button>
+                        <button id="stopBtn" class="btn danger hidden"><i class="fas fa-stop"></i> Stop Recording</button>
+                    </div>
+                    <div class="form-group" style="min-width:220px;">
+                        <label for="speechLanguage">Speech Language</label>
+                        <select id="speechLanguage">
+                            <option value="auto">Auto Detect</option>
+                            <option value="en" selected>English</option>
+                            <option value="ta">Tamil</option>
+                            <option value="hi">Hindi</option>
+                        </select>
+                    </div>
+                </div>
+                <p id="status" class="status-text"></p>
+                <div id="loader" class="loader"></div>
+                <div style="margin-top:10px;">
+                    <label for="editableText" style="display:block;font-size:0.85rem;margin-bottom:6px;">
+                        Edit transcription (optional) before generating report
+                    </label>
+                    <textarea id="editableText" class="textarea" placeholder="After recording, transcription will appear here. You can edit it before generating the structured PDF."></textarea>
+                </div>
+            </section>
+
+            <!-- Step 2 -->
+            <section class="card">
+                <h2>Step 2: Generated Medical Prescription</h2>
+                <div id="results" class="results hidden">
+                    <div class="result-box">
+                        <h3>Transcription</h3>
+                        <p id="transcriptionText">...</p>
+                    </div>
+                    <div class="result-box">
+                        <h3>Summary</h3>
+                        <p id="summaryText">...</p>
+                    </div>
+                </div>
+                <button id="generateBtn" class="btn success" style="margin-top: 10px;" disabled>
+                    <i class="fas fa-file-medical"></i> Generate Structured PDF
+                </button>
+                <a href="/download" class="btn success" style="margin-top: 10px; display:inline-block;">
+                    <i class="fas fa-file-pdf"></i> Download Latest PDF
+                </a>
+            </section>
+
+            <!-- Step 3 -->
+            <section class="card">
+                <h2>Step 3: Translate for Patient</h2>
+                <div class="translate-row">
+                    <select id="languageSelect">
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="hi">Hindi</option>
+                        <option value="ta">Tamil</option>
+                        <option value="zh-CN">Chinese</option>
+                    </select>
+                    <button id="translateBtn" class="btn secondary">
+                        <i class="fas fa-language"></i> Translate
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 4 -->
+            <section class="card">
+                <h2>Step 4: Send Report to Patient</h2>
+                <div class="email-row">
+                    <input type="email" id="emailInput" placeholder="Enter patient email">
+                    <button id="sendEmailBtn" class="btn primary"><i class="fas fa-paper-plane"></i> Send Email</button>
+                </div>
+                <div id="emailStatus" class="status-text"></div>
+            </section>
+            </div>
+
+            <aside class="side-panel">
+                <section class="card">
+                    <h2>Medical Dictionary</h2>
+                    <div style="font-size:0.82rem;color:#636e72;">
+                        Add misheard medicine terms and auto-correct them in future transcriptions.
+                    </div>
+                    <div class="dict-grid">
+                        <input id="wrongTermInput" type="text" placeholder="Misheard term (e.g. paracitamol)">
+                        <input id="correctTermInput" type="text" placeholder="Correct term (e.g. paracetamol)">
+                        <button id="addTermBtn" class="btn secondary"><i class="fas fa-plus"></i> Add / Update</button>
+                    </div>
+                    <div id="dictionaryStatus" class="status-text"></div>
+                    <div id="dictionaryList" style="margin-top:8px;"></div>
+                </section>
+            </aside>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}?v=8"></script>
+</body>
+
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI-Powered Voice-Based Medical Prescription System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f6f9;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #0d6efd;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            width: 70%;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        input, select {
+            padding: 8px;
+            width: 60%;
+            margin: 8px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .primary-btn {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .danger-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .success-btn {
+            background-color: #198754;
+            color: white;
+        }
+
+        .secondary-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        pre {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        #status {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>MediScribes: Smart Voice-to-Report Engine</h1>
+
+<div class="container">
+
+    <!-- Patient Details -->
+    <div class="card">
+        <h2>👤 Patient Information</h2>
+
+        <input type="text" id="patient_name" placeholder="Patient Name" required><br>
+        <input type="number" id="age" placeholder="Age" required><br>
+
+        <select id="gender" required>
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+        </select><br>
+
+        <input type="text" id="doctor_name" placeholder="Doctor Name" required>
+    </div>
+
+    <!-- Voice Recording -->
+    <div class="card">
+        <h2>🩺 Step 1: Record Doctor Diagnosis</h2>
+
+        <button class="primary-btn" onclick="startRecording()">🎤 Start Recording</button>
+        <button class="danger-btn" onclick="stopRecording()">⏹ Stop Recording</button>
+
+        <p id="status"></p>
+    </div>
+
+    <!-- Generated Prescription -->
+    <div class="card">
+        <h2>📄 Step 2: Generated Medical Prescription</h2>
+        <pre id="summary"></pre>
+
+        <button class="success-btn" onclick="downloadPDF()">⬇ Download PDF</button>
+    </div>
+
+    <!-- Translation -->
+    <div class="card">
+        <h2>🌍 Step 3: Translate for Patient</h2>
+
+        <select id="language">
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="hi">Hindi</option>
+            <option value="ar">Arabic</option>
+        </select>
+
+        <button class="secondary-btn" onclick="translateText()">Translate</button>
+
+        <pre id="translated_summary"></pre>
+    </div>
+
+    <!-- Email Section -->
+    <div class="card">
+        <h2>📧 Step 4: Send Report to Patient</h2>
+
+        <input type="email" id="email" placeholder="Enter Patient Email"><br>
+        <button class="primary-btn" onclick="sendEmail()">Send Email</button>
+
+        <p id="email_status"></p>
+    </div>
+
+</div>
+
+<script>
+
+let mediaRecorder;
+let audioChunks = [];
+
+function startRecording() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            document.getElementById("status").innerText = "🎙 Recording in progress...";
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+        });
+}
+
+function stopRecording() {
+    mediaRecorder.stop();
+    document.getElementById("status").innerText = "🧠 Processing diagnosis...";
+
+    mediaRecorder.onstop = () => {
+        let audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        audioChunks = [];
+
+        let formData = new FormData();
+        formData.append("audio", audioBlob);
+        formData.append("patient_name", document.getElementById("patient_name").value);
+        formData.append("age", document.getElementById("age").value);
+        formData.append("gender", document.getElementById("gender").value);
+        formData.append("doctor_name", document.getElementById("doctor_name").value);
+
+        fetch("/record", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("summary").innerText = data.summary;
+            document.getElementById("status").innerText = "✅ Report Generated Successfully";
+        })
+        .catch(error => {
+            document.getElementById("status").innerText = "❌ Error occurred";
+            console.error(error);
+        });
+    };
+}
+
+function downloadPDF() {
+    window.location.href = "/download";
+}
+
+function translateText() {
+    let summary = document.getElementById("summary").innerText;
+    let language = document.getElementById("language").value;
+
+    fetch("/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ summary: summary, language: language })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("translated_summary").innerText = data.translated_summary;
+    });
+}
+
+function sendEmail() {
+    let email = document.getElementById("email").value;
+    let summary = document.getElementById("summary").innerText;
+
+    fetch("/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, summary: summary })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("email_status").innerText = "✅ Email Sent Successfully";
+    })
+    .catch(error => {
+        document.getElementById("email_status").innerText = "❌ Email Failed";
+    });
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - {{ clinic.name or "C.M. Health Clinic" }}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #f5f6fa;
+            color: #2d3436;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 18px 20px 20px;
+            width: 100%;
+            max-width: 420px;
+            box-sizing: border-box;
+        }
+
+        .banner {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 1.15rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #dfe6e9;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            border: 1px solid #0984e3;
+            background: #0984e3;
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            background: #0b73c3;
+        }
+
+        .error {
+            margin-top: 10px;
+            color: #d63031;
+            font-size: 0.85rem;
+        }
+
+        .hint {
+            margin-top: 10px;
+            color: #636e72;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <img class="banner" src="{{ url_for('static', filename='clinic_header.png') }}" alt="Clinic Header" />
+        <h1>User Login</h1>
+        <form method="POST">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" required>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required>
+
+            <button class="btn" type="submit">Login</button>
+        </form>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <div class="hint">
+            Default: user / user123
+        </div>
+    </div>
+</body>
+
+</html>
+

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Hospital Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #f5f6fa;
+            color: #2d3436;
+        }
+
+        .header {
+            padding: 16px 20px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #dfe6e9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 24px auto 40px;
+            padding: 0 16px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 10px 12px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #636e72;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        thead {
+            background-color: #f1f2f6;
+        }
+
+        th,
+        td {
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #ecf0f1;
+            text-align: left;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 2px 6px;
+            border-radius: 999px;
+            border: 1px solid #dfe6e9;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div>
+            <h1 style="margin:0 0 4px;">Admin Dashboard - OPD Analytics</h1>
+            {% if clinic %}
+            <div style="font-size:0.8rem;color:#636e72;">
+                {{ clinic.name }} &mdash; {{ clinic.address }} &nbsp;|&nbsp;
+                Ph: {{ clinic.phone }} &nbsp;|&nbsp;
+                E-mail: {{ clinic.email }}
+            </div>
+            {% endif %}
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+            <a href="/app" style="font-size:0.85rem;text-decoration:none;">&larr; Back to App</a>
+            <a href="/admin-logout" style="font-size:0.85rem;text-decoration:none;color:#d63031;">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="cards">
+            <div class="stat-card">
+                <div class="stat-label">Total Patients Today</div>
+                <div class="stat-value">{{ stats.total_patients_today }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Visits Today</div>
+                <div class="stat-value">{{ stats.total_visits_today }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Visits This Month</div>
+                <div class="stat-value">{{ stats.total_visits_this_month }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Most Common Diagnosis</div>
+                <div class="stat-value">
+                    {% if stats.most_common_diagnosis %}
+                    {{ stats.most_common_diagnosis }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <h2 style="font-size:1rem;margin:0 0 8px;">Recent Visits</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Age</th>
+                    <th>Weight</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Doctor</th>
+                    <th>Diagnosis</th>
+                    <th>Language</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in visits %}
+                <tr>
+                    <td>{{ v.id }}</td>
+                    <td>{{ v.patient_name }}</td>
+                    <td>{{ v.age }}</td>
+                    <td>{{ v.weight }}</td>
+                    <td>{{ v.gender }}</td>
+                    <td>{{ v.contact_email }}</td>
+                    <td>{{ v.visit_date }}</td>
+                    <td>{{ v.visit_time }}</td>
+                    <td>{{ v.doctor_name }}</td>
+                    <td>{{ v.diagnosis }}</td>
+                    <td>
+                        {% if v.language_translated %}
+                        <span class="badge">{{ v.language_translated }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</body>
+
+</html>
+

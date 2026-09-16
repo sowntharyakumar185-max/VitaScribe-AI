@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ clinic.name or "C.M. Health Clinic" }}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f6fa;
+            color: #2d3436;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wrap {
+            width: 100%;
+            max-width: 720px;
+            padding: 24px 16px;
+            text-align: center;
+        }
+
+        .banner {
+            width: 100%;
+            height: 140px;
+            object-fit: contain;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+        }
+
+        h1 {
+            margin: 18px 0 6px;
+            font-size: 1.2rem;
+            font-weight: 650;
+        }
+
+        p {
+            margin: 0;
+            color: #636e72;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <img class="banner" src="{{ url_for('static', filename='clinic_header.png') }}" alt="Clinic Header" />
+        <h1>Loading...</h1>
+        <p>You will be redirected to login.</p>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 1200);
+    </script>
+</body>
+
+</html>
+
