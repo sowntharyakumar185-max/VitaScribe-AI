@@ -21,7 +21,7 @@
 * Cleans the text.
 * Generates a summary.
 * Downloads a PDF report (`seminar\_report.pdf`).
-=======
+
 
 # Vita-Scribe-AI-Health-care-documentation-report
 
